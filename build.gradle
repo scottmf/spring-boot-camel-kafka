@@ -1,0 +1,70 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.8.RELEASE'
+        transmodeGradleVersion = '1.2'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    providedRuntime
+}
+
+eclipse {
+//    jdt.file.withProperties { it['org.eclipse.jdt.core.compiler.processAnnotations'] = 'enabled' }
+    classpath {
+         downloadSources = true
+         downloadJavadoc = true
+//         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+//         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'javax.servlet:javax.servlet-api'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-aop'
+    compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile 'org.springframework.boot:spring-boot-configuration-processor'
+    def camelVersion = '2.19.3'
+    compile "org.apache.camel:camel-spring:${camelVersion}"
+    compile "org.apache.camel:camel-spring-boot:${camelVersion}"
+    compile "org.apache.camel:camel-spring-javaconfig:${camelVersion}"
+    compile "org.apache.camel:camel-metrics:${camelVersion}"
+    compile "org.apache.camel:camel-kafka:${camelVersion}"
+//    compile 'org.springframework.kafka:spring-kafka:2.0.1.RELEASE'
+    testCompile 'info.batey.kafka:kafka-unit:0.7'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2'
+}
+
+bootRepackage {
+    mainClass = 'com.scottieknows.kafka.CamelKafkaApplication'
+}
